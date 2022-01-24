@@ -10,29 +10,29 @@ public class PlayerCamera : MonoBehaviour
     public enum MouseOption { locked, confined }
     public MouseOption mouseOption = MouseOption.locked;
     public enum ChosenCam { orbitalCamera, gameplayCamera }
-    [Range(1.0f, 5.0f)] public float sensiCamX = 1.0f;
-    [Range(0.1f, 1.0f)] public float sensiCamY = 1.0f;
-    [Range(0.01f, 1.0f)] public float smoothCam = 1.0f;
-    [Range(0.0f, 5.0f)] public float zoomCam = 3;
+    [Range(1.0f, 5.0f)] public float sensitivityCameraX = 1.0f;
+    [Range(0.1f, 1.0f)] public float sensitivityCameraY = 1.0f;
+    [Range(0.01f, 1.0f)] public float smoothCamera = 1.0f;
+    [Range(0.0f, 5.0f)] public float zoomCamera = 3;
 
     //Private
-    private Vector3 offsetCam;
-    private float camX, camY;
-    private RaycastHit hit = new RaycastHit();
+    private Vector3 offsetCamera;
+    private float cameraX, cameraY;
+    private RaycastHit raycastHit = new RaycastHit();
 
     //External
-    public GameObject _Player;
-    private Transform _PT;
-    private Rigidbody _PRB;
+    public GameObject _PlayerGameObject;
+    private Transform _PlayerTransform;
+    private Rigidbody _PlayerRigidbody;
 
     void Start()
     {
-        if (_Player == null)
-            _Player = GameObject.FindGameObjectWithTag("Player");
+        if (_PlayerGameObject == null)
+            _PlayerGameObject = GameObject.FindGameObjectWithTag("Player");
 
-        _PT = _Player.GetComponent<Transform>();
-        _PRB = _Player.GetComponent<Rigidbody>();
-        offsetCam = transform.position - _PT.position;
+        _PlayerTransform = _PlayerGameObject.GetComponent<Transform>();
+        _PlayerRigidbody = _PlayerGameObject.GetComponent<Rigidbody>();
+        offsetCamera = transform.position - _PlayerTransform.position;
     }
 
     void LateUpdate()
@@ -42,31 +42,31 @@ public class PlayerCamera : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
-            camX = Input.GetAxis("Mouse X") * sensiCamX;
+            cameraX = Input.GetAxis("Mouse X") * sensitivitycameraX;
 
-            camY = Mathf.Clamp(camY -= Input.GetAxis("Mouse Y") * sensiCamY, -1.0f, 5.0f);
+            cameraY = Mathf.Clamp(cameraY -= Input.GetAxis("Mouse Y") * sensitivityCameraY, -1.0f, 5.0f);
 
-            zoomCam = Mathf.Clamp(zoomCam -= Input.mouseScrollDelta.y, 0.0f, 5.0f);
+            zoomCamera = Mathf.Clamp(zoomCamera -= Input.mouseScrollDelta.y, 0.0f, 5.0f);
 
-            Quaternion angleCam = Quaternion.AngleAxis(camX, Vector3.up);
-            offsetCam = angleCam * offsetCam;
-            Vector3 newPos = _PT.position + offsetCam;
-            newPos.y += camY;
-            newPos -= transform.forward * zoomCam;
-            transform.position = Vector3.Slerp(transform.position, newPos, smoothCam);
-            transform.LookAt(_PT);
+            Quaternion angleCam = Quaternion.AngleAxis(cameraX, Vector3.up);
+            offsetCamera = angleCam * offsetCamera;
+            Vector3 newPos = _PlayerTransform.position + offsetCamera;
+            newPos.y += cameraY;
+            newPos -= transform.forward * zoomCamera;
+            transform.position = Vector3.Slerp(transform.position, newPos, smoothCamera);
+            transform.LookAt(_PlayerTransform);
 
-            if (_PRB.velocity != Vector3.zero)
+            if (_PlayerRigidbody.velocity != Vector3.zero)
             {
-                _PRB.transform.forward = new Vector3(transform.forward.x, 0, transform.forward.z);
+                _PlayerRigidbody.transform.forward = new Vector3(transform.forward.x, 0, transform.forward.z);
             }
             else
             {
-                _PRB.transform.forward = _PRB.transform.forward;
+                _PlayerRigidbody.transform.forward = _PlayerRigidbody.transform.forward;
             }
 
-            if (Physics.Linecast(_PT.position, transform.position, out hit))
-                transform.position = hit.point + transform.forward * 1.0f;
+            if (Physics.Linecast(_PlayerTransform.position, transform.position, out raycastHit))
+                transform.position = raycastHit.point + transform.forward * 1.0f;
         }
         else if(mouseOption == MouseOption.confined)
         {

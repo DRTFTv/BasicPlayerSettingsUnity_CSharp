@@ -16,7 +16,7 @@ public class PlayerRequirements : MonoBehaviour
 
     //External
     public Camera _Camera;
-    private ScriptableObject _CodCamera, _CodMovement;
+    private ScriptableObject _CameraScript, _MovementScript;
 
     void Awake()
     {

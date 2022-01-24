@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     //Private
     private Vector3 moveDirection = Vector3.zero;
-    private Rigidbody RB;
+    private Rigidbody rigidbody;
 
     //External
     public Camera _Camera;
@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
         if (_Camera == null)
             _Camera = Camera.main;
 
-        RB = gameObject.GetComponent<Rigidbody>();
+        rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
     void LateUpdate()
@@ -45,12 +45,12 @@ public class PlayerMovement : MonoBehaviour
         else
             moveDirection *= walkingSpeed * Time.deltaTime;
 
-        RB.velocity = new Vector3(moveDirection.x, RB.velocity.y, moveDirection.z);
+        rigidbody.velocity = new Vector3(moveDirection.x, rigidbody.velocity.y, moveDirection.z);
 
         if (Physics.Raycast(transform.position, -Vector3.up, 1.10f))
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                RB.AddForce(Vector3.up * jumpForce);
+                rigidbody.AddForce(Vector3.up * jumpForce);
             }
     }
 }
